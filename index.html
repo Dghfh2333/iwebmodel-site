@@ -996,11 +996,21 @@ footer a { color:var(--a1); }
     }catch(e){}
   }
 
+  // --- GA4 отслеживание конверсий (лиды + Telegram) ---
+  function trackLead(source){
+    try{ gtag('event','generate_lead',{form:source,currency:'UAH',value:0}); }catch(e){}
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href*="t.me/"]');
+    if(a){ try{ gtag('event','click_telegram',{link:a.href}); }catch(e){} }
+  });
+
   // Hero form (desktop)
   document.getElementById('hero-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const d = Object.fromEntries(new FormData(this));
     await sendLead(['📱 <b>Контакт:</b> '+d.contact,'✅ <b>Страница:</b> Hero-форма']);
+    trackLead('hero');
     this.innerHTML = '<p style="text-align:center;color:#22c55e;font-weight:700;padding:12px 0">✅ Отправлено! Напишем в течение 1 часа.</p>';
   });
 
@@ -1015,6 +1025,7 @@ footer a { color:var(--a1); }
       '💻 <b>Оборудование:</b> '+(equipMap[d.equipment]||d.equipment),
       '✅ <b>Страница:</b> Анкета'
     ]);
+    trackLead('anketa');
     this.style.display = 'none';
     document.getElementById('success').style.display = 'block';
   });
